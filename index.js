@@ -91,7 +91,8 @@ function qualifyImgSources(html, options) {
 
 function convert(options) {
 	options = options || {};
-	if (!options.source) {
+
+	if (!(options.source || options.rawSource)) {
 		throw new Error('Source path must be provided');
 	}
 
@@ -127,7 +128,10 @@ function convert(options) {
 			local.footer = new Handlebars.SafeString(footerContent);
 		}
 
-		return readFile(options.source, 'utf8');
+		if (options.source) {
+			return readFile(options.source, 'utf8');
+		}
+		return options.rawSource
 	}).then(md => {
 		let content = parseMarkdownToHtml(md);
 
