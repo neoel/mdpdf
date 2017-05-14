@@ -96,9 +96,9 @@ function convert(options) {
 		throw new Error('Source path must be provided');
 	}
 
-	if (!options.destination) {
-		throw new Error('Destination path must be provided');
-	}
+	// if (!options.destination) {
+	// 	throw new Error('Destination path must be provided');
+	// }
 
 	let template = {};
 	const local = {
@@ -156,13 +156,26 @@ function createPdf(html, options) {
     // Promisify won't work due to html-pdf's construction so
     // we wrap it in a promise ourselves.
 	return new Promise((resolve, reject) => {
-		pdf.create(html, options.pdf).toFile(options.destination, (err, res) => {
-			if (err) {
-				reject(err);
-			} else {
-				resolve(res.filename);
-			}
-		});
+
+		let res = pdf.create(html, options.pdf)
+
+		if (options.destination) {
+			res.toFile(options.destination, (err, res) => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(res.filename);
+				}
+			});
+		} else {
+			res.toBuffer((err, buffer) => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(buffer)
+				}
+			})
+		}
 	});
 }
 
